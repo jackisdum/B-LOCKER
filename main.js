@@ -1,4 +1,6 @@
 // B-LOCKER Core Logic
+import { registerPlugin } from '@capacitor/core';
+const BockerNative = registerPlugin('BockerNative');
 
 const apps = [
     { id: 'insta', name: 'Instagram', icon: '📸', color: '#E4405F', usage: 0 },
@@ -106,6 +108,9 @@ function startSession() {
     updateStats();
 
     startTimer(state.sessionLimit * 60);
+    
+    // NATIVE: Tell Android to stop blocking while session is active
+    BockerNative.setUnlockState({ state: true });
 }
 
 function startTimer(seconds) {
@@ -158,6 +163,9 @@ function endSession() {
     simulatedApp.classList.remove('active');
     state.currentApp = null;
     state.sessionLimit = 0;
+
+    // NATIVE: Tell Android to start blocking again
+    BockerNative.setUnlockState({ state: false });
 }
 
 init();
