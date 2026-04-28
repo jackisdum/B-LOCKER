@@ -14,19 +14,13 @@ import android.os.IBinder;
 import androidx.core.app.NotificationCompat;
 import java.util.Arrays;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.ArrayList;
 
 public class AppBlockerService extends Service {
     private static final String CHANNEL_ID = "B-LOCKER_SERVICE";
     public static boolean isUnlocked = false;
+    public static List<String> activeBlockedPackages = new ArrayList<>();
     private Handler handler = new Handler();
-    private List<String> blockedApps = Arrays.asList(
-        "com.instagram.android",
-        "com.zhiliaoapp.musically", // TikTok
-        "com.twitter.android",
-        "com.facebook.katana"
-    );
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -53,33 +47,28 @@ public class AppBlockerService extends Service {
     }
 
     private void checkForegroundApp() {
-        if (isUnlocked) return; // Don't block if session is active
-        
-        String currentApp = getForegroundApp();
-        if (blockedApps.contains(currentApp)) {
-            // Check if B-LOCKER is already active/unlocking
-            // For now, we'll just force launch MainActivity
-            Intent lockIntent = new Intent(this, MainActivity.class);
-            lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            lockIntent.putExtra("blockedApp", currentApp);
-            startActivity(lockIntent);
-        }
-    }
+        if (isUnlocked) return;
 
-    private String getForegroundApp() {
         UsageStatsManager usm = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
         long time = System.currentTimeMillis();
-        List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 10, time);
-        if (appList != null && appList.size() > 0) {
-            SortedMap<Long, UsageStats> mySortedMap = new TreeMap<>();
-            for (UsageStats usageStats : appList) {
-                mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
+        List<UsageStats> stats = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 10, time);
+        if (stats != null) {
+            String topPackage = "";
+            long lastUsed = 0;
+            for (UsageStats usageStats : stats) {
+                if (usageStats.getLastTimeUsed() > lastUsed) {
+                    topPackage = usageStats.getPackageName();
+                    lastUsed = usageStats.getLastTimeUsed();
+                }
             }
-            if (!mySortedMap.isEmpty()) {
-                return mySortedMap.get(mySortedMap.lastKey()).getPackageName();
+
+            if (activeBlockedPackages.contains(topPackage)) {
+                // BLOCK IT: Bring B-LOCKER to front
+                Intent lockIntent = new Intent(this, MainActivity.class);
+                lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(lockIntent);
             }
         }
-        return "";
     }
 
     private void createNotificationChannel() {

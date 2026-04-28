@@ -1,16 +1,22 @@
 package com.blocker.app;
 
 import android.app.AppOpsManager;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.provider.Settings;
 import com.getcapacitor.BridgeActivity;
+import com.getcapacitor.JSArray;
+import com.getcapacitor.JSObject;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends BridgeActivity {
     @Override
@@ -38,12 +44,48 @@ public class MainActivity extends BridgeActivity {
     }
 
     @CapacitorPlugin(name = "BockerNative")
-    public static class BockerNativePlugin extends Plugin {
+    public class BockerNativePlugin extends Plugin {
         @PluginMethod
         public void setUnlockState(PluginCall call) {
             boolean state = call.getBoolean("state", false);
             AppBlockerService.isUnlocked = state;
             call.resolve();
+        }
+
+        @PluginMethod
+        public void setBlockedApps(PluginCall call) {
+            JSArray apps = call.getArray("apps");
+            try {
+                List<String> packages = apps.toList();
+                AppBlockerService.activeBlockedPackages.clear();
+                AppBlockerService.activeBlockedPackages.addAll(packages);
+            } catch (Exception e) {}
+            call.resolve();
+        }
+
+        @PluginMethod
+        public void getUsageStats(PluginCall call) {
+            UsageStatsManager usm = (UsageStatsManager) getContext().getSystemService(Context.USAGE_STATS_SERVICE);
+            long now = System.currentTimeMillis();
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            long startOfDay = calendar.getTimeInMillis();
+
+            Map<String, UsageStats> stats = usm.queryAndAggregateUsageStats(startOfDay, now);
+            JSObject results = new JSObject();
+            
+            for (Map.Entry<String, UsageStats> entry : stats.entrySet()) {
+                long totalTime = entry.getValue().getTotalTimeInForeground();
+                if (totalTime > 0) {
+                    results.put(entry.getKey(), (int)(totalTime / 60000)); // Minutes
+                }
+            }
+            
+            JSObject ret = new JSObject();
+            ret.put("stats", results);
+            call.resolve(ret);
         }
     }
 }
