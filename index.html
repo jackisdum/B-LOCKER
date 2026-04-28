@@ -1,84 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>B-LOCKER | Mindful Focus</title>
-    <link rel="stylesheet" href="./style.css">
-</head>
-<body>
-    <div class="bg-glow bg-glow-1"></div>
-    <div class="bg-glow bg-glow-2"></div>
-
-    <div id="app">
-        <header>
-            <h1>B-<span>LOCKER</span></h1>
-            <p class="subtitle">Mindful social media control</p>
-        </header>
-
-        <div class="stats-container">
-            <div class="glass-card">
-                <div class="stat-label">Total Today</div>
-                <div class="stat-value" id="total-usage">0h 0m</div>
-            </div>
-            <div class="glass-card">
-                <div class="stat-label">Sessions</div>
-                <div class="stat-value" id="session-count">0</div>
-            </div>
-        </div>
-
-        <section class="app-list-section">
-            <h2 class="section-title">Your Social Hub</h2>
-            <div id="app-list" class="app-list">
-                <!-- Apps will be injected here -->
-            </div>
-        </section>
-    </div>
-
-    <!-- MODAL: Intentional Limit Setting -->
-    <div id="entry-modal" class="overlay">
-        <div class="overlay-icon">🔒</div>
-        <h2 id="entry-app-name">Instagram</h2>
-        <p>How much time do you want to spend on this session?</p>
-        
-        <div class="time-selector" id="time-selector">
-            <button class="time-btn" data-time="1">1m</button>
-            <button class="time-btn" data-time="5">5m</button>
-            <button class="time-btn" data-time="10">10m</button>
-            <button class="time-btn" data-time="15">15m</button>
-        </div>
-
-        <button id="start-session-btn" class="primary-btn">Unlock Session</button>
-    </div>
-
-    <!-- MODAL: Mindful Extension Hurdle -->
-    <div id="hurdle-modal" class="overlay">
-        <div class="overlay-icon pulse">⏳</div>
-        <h2>Session Expired</h2>
-        <p>Your intentional time is up. To extend for 5 more minutes, type the following exactly:</p>
-        
-        <div class="hurdle-text" id="hurdle-prompt">
-            I have spent <span>5 minutes</span> on <span>Instagram</span>.
-        </div>
-
-        <div class="input-group">
-            <input type="text" id="hurdle-input" placeholder="Type here..." autocomplete="off">
-        </div>
-
-        <button id="extend-session-btn" class="primary-btn" disabled>Extend 5m</button>
-        <button id="close-app-btn" class="primary-btn" style="margin-top: 12px; background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary);">Close App</button>
-    </div>
-
-    <!-- SIMULATED APP VIEW (For Demo) -->
-    <div id="simulated-app" class="overlay" style="background: #111;">
-        <div style="position: absolute; top: 20px; left: 20px; color: var(--accent-color); font-weight: 800;">
-            <span id="sim-app-name">Instagram</span> • <span id="timer-display">05:00</span>
-        </div>
-        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #444; font-style: italic;">
-            [ Simulated Content ]
-        </div>
-    </div>
-
-    <script type="module" src="./main.js"></script>
-</body>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
