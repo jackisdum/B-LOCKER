@@ -19,17 +19,37 @@ function formatTime(sec) {
   return `${m}:${s}`;
 }
 
-const C = {
-  bg: "#F5F4F0",
-  surface: "#FFFFFF",
-  border: "#E2E0D8",
-  text: "#1A1917",
-  muted: "#8A8880",
-  danger: "#C0392B",
-  success: "#2D6A4F",
+const THEMES = {
+  light: {
+    bg: "#F5F4F0",
+    surface: "#FFFFFF",
+    border: "#E2E0D8",
+    text: "#1A1917",
+    muted: "#8A8880",
+    danger: "#C0392B",
+    success: "#2D6A4F",
+  },
+  dark: {
+    bg: "#0A0A0A",
+    surface: "#1A1A1A",
+    border: "#333333",
+    text: "#F5F4F0",
+    muted: "#888888",
+    danger: "#E74C3C",
+    success: "#27AE60",
+  }
 };
 
 function BLocker() {
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+  const C = THEMES[theme];
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
+
   const [screen, setScreen] = useState("home");
   const [apps, setApps] = useState(APPS);
   const [selectedApp, setSelectedApp] = useState(null);
@@ -141,7 +161,12 @@ function BLocker() {
                 <p style={{ fontSize: 11, color: C.muted, letterSpacing: 1, textTransform: "uppercase", marginBottom: 3 }}>B-LOCKER</p>
                 <h1 style={{ fontSize: 28, fontWeight: 600, color: C.text, lineHeight: 1 }}>Good morning.</h1>
               </div>
-              <div style={{ width: 40, height: 40, borderRadius: 12, background: C.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🔒</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={toggleTheme} style={{ width: 40, height: 40, borderRadius: 12, background: C.bg, border: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>
+                  {theme === 'light' ? '🌙' : '☀️'}
+                </button>
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: C.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🔒</div>
+              </div>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 28 }}>
@@ -387,7 +412,7 @@ function Nav({ screen, setScreen, C }) {
         const active = screen === tab.id || (tab.id === "home" && ["session-start","active","hurdle"].includes(screen));
         return (
           <button key={tab.id} onClick={() => setScreen(tab.id)}
-            style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "12px 0 22px", background: "white", border: "none", color: active ? C.text : C.border, fontSize: 10, fontWeight: active ? 600 : 400, cursor: "pointer", transition: "color 0.15s" }}>
+            style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "12px 0 22px", background: C.surface, border: "none", color: active ? C.text : C.muted, fontSize: 10, fontWeight: active ? 600 : 400, cursor: "pointer", transition: "all 0.15s" }}>
             <span style={{ fontSize: 20 }}>{tab.icon}</span>
             {tab.label}
           </button>
