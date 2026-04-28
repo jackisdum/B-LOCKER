@@ -1,14 +1,40 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom/client";
 import { registerPlugin } from '@capacitor/core';
+import { 
+  Lock, 
+  Moon, 
+  Sun, 
+  LayoutGrid, 
+  CircleDot, 
+  ChevronLeft, 
+  Clock, 
+  History, 
+  BarChart3,
+  AlertCircle,
+  CheckCircle2
+} from 'lucide-react';
+
+const InstagramIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+);
+const TikTokIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
+);
+const TwitterIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+);
+const YouTubeIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+);
 
 const BockerNative = registerPlugin('BockerNative');
 
 const APPS = [
-  { id: "instagram", name: "Instagram", letter: "Ig", color: "#C13584", blocked: true, dailyMin: 47, sessions: 3 },
-  { id: "tiktok", name: "TikTok", letter: "Tt", color: "#010101", blocked: true, dailyMin: 62, sessions: 5 },
-  { id: "twitter", name: "Twitter / X", letter: "X", color: "#1A8CD8", blocked: false, dailyMin: 23, sessions: 2 },
-  { id: "youtube", name: "YouTube", letter: "Yt", color: "#FF0000", blocked: true, dailyMin: 88, sessions: 4 },
+  { id: "instagram", name: "Instagram", icon: <InstagramIcon />, color: "#C13584", blocked: true, dailyMin: 47, sessions: 3 },
+  { id: "tiktok", name: "TikTok", icon: <TikTokIcon />, color: "#010101", blocked: true, dailyMin: 62, sessions: 5 },
+  { id: "twitter", name: "Twitter / X", icon: <TwitterIcon />, color: "#1A8CD8", blocked: false, dailyMin: 23, sessions: 2 },
+  { id: "youtube", name: "YouTube", icon: <YouTubeIcon />, color: "#FF0000", blocked: true, dailyMin: 88, sessions: 4 },
 ];
 
 const GOAL_OPTIONS = [5, 10, 15, 20, 30];
@@ -162,10 +188,12 @@ function BLocker() {
                 <h1 style={{ fontSize: 28, fontWeight: 600, color: C.text, lineHeight: 1 }}>Good morning.</h1>
               </div>
               <div style={{ display: "flex", gap: 8 }}>
-                <button onClick={toggleTheme} style={{ width: 40, height: 40, borderRadius: 12, background: C.bg, border: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>
-                  {theme === 'light' ? '🌙' : '☀️'}
+                <button onClick={toggleTheme} style={{ width: 40, height: 40, borderRadius: 12, background: C.bg, border: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "center", color: C.text }}>
+                  {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
                 </button>
-                <div style={{ width: 40, height: 40, borderRadius: 12, background: C.text, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🔒</div>
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: C.text, display: "flex", alignItems: "center", justifyContent: "center", color: C.surface }}>
+                  <Lock size={20} />
+                </div>
               </div>
             </div>
 
@@ -187,8 +215,8 @@ function BLocker() {
               {apps.map((app, i) => (
                 <div key={app.id} className="row-hover" onClick={() => openApp(app)}
                   style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", background: C.surface, borderBottom: i < apps.length - 1 ? `1px solid ${C.border}` : "none", cursor: app.blocked ? "pointer" : "default", transition: "background 0.12s" }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 11, background: app.color, display: "flex", alignItems: "center", justifyContent: "center", color: "white", fontSize: 12, fontWeight: 600, flexShrink: 0 }}>
-                    {app.letter}
+                  <div style={{ width: 40, height: 40, borderRadius: 11, background: app.color, display: "flex", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
+                    {app.icon}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontSize: 15, fontWeight: 500, color: C.text }}>{app.name}</p>
@@ -407,13 +435,13 @@ function BLocker() {
 
 function Nav({ screen, setScreen, C }) {
   return (
-    <nav style={{ display: "flex", borderTop: `1px solid ${C.border}` }}>
-      {[{ id: "home", label: "Apps", icon: "⊞" }, { id: "dashboard", label: "Stats", icon: "◎" }].map(tab => {
+    <nav style={{ display: "flex", borderTop: `1px solid ${C.border}`, background: C.surface }}>
+      {[{ id: "home", label: "Apps", icon: <LayoutGrid size={22} /> }, { id: "dashboard", label: "Stats", icon: <BarChart3 size={22} /> }].map(tab => {
         const active = screen === tab.id || (tab.id === "home" && ["session-start","active","hurdle"].includes(screen));
         return (
           <button key={tab.id} onClick={() => setScreen(tab.id)}
             style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "12px 0 22px", background: C.surface, border: "none", color: active ? C.text : C.muted, fontSize: 10, fontWeight: active ? 600 : 400, cursor: "pointer", transition: "all 0.15s" }}>
-            <span style={{ fontSize: 20 }}>{tab.icon}</span>
+            {tab.icon}
             {tab.label}
           </button>
         );
