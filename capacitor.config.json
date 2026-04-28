@@ -1,0 +1,6 @@
+{
+  "appId": "com.blocker.app",
+  "appName": "B-LOCKER",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
